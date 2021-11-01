@@ -7,6 +7,6 @@ FROM gitpod/workspace-full
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # Install the Azure CLI
-RUN brew tap azure/functions \
-    && brew install azure-functions-core-tools@3 \
-    && brew link --overwrite azure-functions-core-tools@3
+#RUN brew tap azure/functions \
+#    && brew install azure-functions-core-tools@3 \
+#    && brew link --overwrite azure-functions-core-tools@3
