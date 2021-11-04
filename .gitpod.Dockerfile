@@ -2,6 +2,8 @@
 
 FROM gitpod/workspace-full
 
+ENV DEBCONF_NOWARNINGS=yes
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
@@ -11,6 +13,8 @@ FROM gitpod/workspace-full
 #    && brew tap azure/functions \
 #    && brew install azure-functions-core-tools@3 \
 #    && brew link --overwrite azure-functions-core-tools@3
+
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg \
     && sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg \
