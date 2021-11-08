@@ -165,9 +165,11 @@ def getReplacedItem(id):
         'addition': 'test replace {0}'.format(id),
     }
 # Sample Data2
-def getItem(id):
+def getItem(id, illuminance, temp, humid):
     return {
         'id': 'id{0}'.format(id),
         'partitionKey': id,
-        'message': 'Hello World CosmosDB!',
+        'illuminance': illuminance,
+        'temp': temp,
+        'humid': humid,
     }

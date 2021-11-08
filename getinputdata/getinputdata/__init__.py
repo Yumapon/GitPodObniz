@@ -1,50 +1,53 @@
 import logging
 
 import azure.functions as func
+import requests
+import datetime
+
 from cosmos import DatabaseConnection
 from cosmos import getItem, getReplacedItem
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
 
-    print("---")
+    """
+    Cosmos DBにデータを格納します。
+
+    Parameters
+    -----------
+    req : HttpRequest
+    
+    Returns
+    -----------
+    HttpResponse
+
+    """
+
+    logging.info('Python HTTP trigger function processed a request.')
+
+    #reqから照度、温度を取得
+    illuminance = req.params.get('illuminance')
+    temp = req.params.get('temp')
+
+    #SoujiさんAPIで湿度を取得
+    url = "https://hack2021goudou.azurewebsites.net/api/gethumid?code=gjHcmUhiNajYsy8f18vkEsV2JsoGo1LUWtEHz1A/yykhrob66kqA3w=="
+    apireq = requests.get(url)
+    #TODO: Soujiさんにcode:関数キーが何か確認
+    pyaload = {"code":"xxxx"}
+    humid = req.params.get('humid')
+
+    #TODO: なんとかAzure Functionのoutとバインディングできそうだが、面倒すぎるのでやめる。
+    #Cosmosdbの準備
     dbConnection = DatabaseConnection()
 
+    #Cosmosdbの初期化
     print(dbConnection.initialize_database())
     print(dbConnection.initialize_container())
 
-    dbConnection.create_item(getItem("1"))
-    dbConnection.create_item(getItem("2"))
-    dbConnection.create_item(getItem("3"))
-    dbConnection.upsert_item(getReplacedItem("3"))
-    dbConnection.upsert_item(getReplacedItem("4"))
-    dbConnection.delete_item(getItem("2"))
+    #主キーとするタイムスタンプを取得し、Cosmosdbへ格納する
+    DIFF_JST_FROM_UTC = 9
+    now = datetime.datetime.utcnow() + datetime.timedelta(hours=DIFF_JST_FROM_UTC)
+    dbConnection.create_item(getItem(now, illuminance, temp, humid))
 
-    print("---")
-    itemList = dbConnection.read_items()
-    for item in itemList:
-        print(item)
+    return func.HttpResponse("Success!", status_code=200)
 
-    """
-    logging.info('Python HTTP trigger function processed a request.')
-
-    name = req.params.get('name')
-
-    doc.set(func.Document.from_json(request_body))
-
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
-    """
