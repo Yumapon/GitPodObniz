@@ -12,6 +12,16 @@
         ]
       },
       {
+        "type": "cosmosDB",
+        "direction": "out",
+        "name": "doc",
+        "databaseName": "putobnizdata",
+        "collectionName": "putobnizdatacollection",
+        "createIfNotExists": "true",
+        "partitionKey": "id",
+        "connectionStringSetting": "AccountEndpoint=https://putobnizdata.documents.azure.com:443/;AccountKey=qv3Q1DxJP9zImWK1OzOJvmT1TcoIroT2aGpzcrU2ut43CwGSMtBfrfCCu0uLm2XH3RT5gjH8iYELbAqcd6qrbg==;"
+      },
+      {
         "type": "http",
         "direction": "out",
         "name": "$return"
