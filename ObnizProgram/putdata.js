@@ -1,6 +1,7 @@
 const Obniz = require("obniz");
+var obniz = new Obniz("5388-5723");
 
-  var obniz = new Obniz("5388-5723");
+const request = require('request');
 
 //Obniz接続時の処理
 obniz.onconnect = async function () {
@@ -30,18 +31,59 @@ obniz.onconnect = async function () {
           url: URL,
           headers: {'Content-type': 'application/json'},
           qs: {
-              illuminance: illuminance,
-              temp: temp
+              "illuminance": illuminance,
+              "temp": temp,
+              "code": "GNwUmfVwJB6hBoaoh4a9lKi8zHVofrW2F69nXCF/Ci1vfNS8Nc1X9w=="
           },
           json: true
       }, function(err, req, data){
           console.log(data);
       });
     };
-  };  
+  };
+  
+  obniz.repeat(async () => {
+    console.log("定期実行")
+    
+    //温度取得
+    var temp = await tempsens.getWait();
+    console.log("温度:" + temp)
+    //照度取得
+    var array = [];
+    for (i = 0; i < 10; i++){
+        var illuminance = await pt550.getWait();
+        array.push(illuminance);
+        console.log("照度:" + illuminance);
+        await obniz.wait(1000);
+    }
+    //照度の平均
+    let averageill = 0;
+
+    array.forEach(function(v) {
+      averageill += v;
+    });
+
+    averageill = averageill / array.length
+    console.log("平均照度:" + averageill);
+
+    //照度の平均と温度を送信
+    //API呼び出し      
+    var URL = 'https://periodicacquisitionofdatafunc2.azurewebsites.net/api/periodicacquisitionofdatafunc';
+      request.get({
+        url: URL,
+        headers: {'Content-type': 'application/json'},
+        qs: {
+            "averageill": averageill,
+            "temp": temp
+        },
+        json: true
+    }, function(err, req, data){
+        console.log(data);
+    });
+  },300000 );
 }
 
 //Obniz接続解除時の処理
 obniz.onclose = async function(){
 
-};
+}
