@@ -28,4 +28,6 @@ az functionapp create \
 
 func azure functionapp publish PeriodicAcquisitionOfDataFunc
 
+pip install -r requirements.txt 
+
 ```
